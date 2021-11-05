@@ -1,6 +1,5 @@
 # calender-api
-
-## Authors: Edourard Eltherington and Veronica Jack 
+### Authors: Edourard Eltherington and Veronica Jack 
 
 
 ### Planning Phase: 
