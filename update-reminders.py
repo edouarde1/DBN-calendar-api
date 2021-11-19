@@ -76,9 +76,12 @@ def get_length(start_string, end_string):
 # From reminders object, make the reminders readable
 def get_reminders(reminders):
     result = ''
-    if(reminders['useDefault'] == True): result = 'None'
+
+    if(reminders['useDefault'] == True or not "overrides" in reminders): result = 'None'
     else:
+
         overrides = reminders['overrides']
+        
         reminderList = []
         for ov in overrides:
             if 'minutes' in ov: reminderList.append(str(ov['minutes']) + ' ' + 'minutes')
@@ -103,7 +106,6 @@ def get_upcoming_events(service, calId):
         start_string = event['start'].get('dateTime')
         end_string = event['end'].get('dateTime')
         startDate, startTime = format_date(start_string)
-        
         print(event['summary'])
         print('\t- Date:', startDate)
         print('\t- Start:', startTime)
@@ -111,8 +113,23 @@ def get_upcoming_events(service, calId):
         print('\t- Colour:', get_color(event['colorId']))
         print('\t- Reminders:', get_reminders(event['reminders']))
 
+    return events
+
+def update_numReminder (service, event, calId ,numReminder):
+    if(numReminder == 1):    # One reminder 10 min before 
+        event['overrides'] = [{'method': 'popup', 'minutes': 10}]
+        updated_event = service.events().update(calendarId=calId, eventId=event['id'], body=event).execute()
+    elif(numReminder == 2):   # reminder 10 min , 1  hour before
+        event['overrides'] = [{'method': 'popup', 'minutes': 10}, {'method': 'popup', 'minutes': 60}]
+        updated_event = service.events().update(calendarId=calId, eventId=event['id'], body=event).execute()
+    elif(numReminder == 3):
+        event['overrides'] = [{'method': 'popup', 'minutes': 10}, {'method': 'popup', 'minutes': 60},{'method': 'popup', 'minutes': 1440}]    # reminder 10 min, 1 hour, 1 day before
+    else:
+        print("No Update")
+
+
 def main():
-    try:
+    
         # Establish the connection using credentials
         service = establish_connection()
 
@@ -133,14 +150,23 @@ def main():
         print(myCalendar["summary"])
     
         # Get the upcoming events
-        get_upcoming_events(service, myCalendar["id"])
+        events = get_upcoming_events(service, myCalendar["id"])
     
+
         # TODO: Run Matlab code from this Python program
         
         # TODO: Get best action from Matlab result
         
         # TODO: Do the best action
-    
+        
+        # Update Number of reminders
+        for event in events:
+            update_numReminder(service, event, myCalendar["id"], 2 )
+            if("overrides" in event):
+                print(event['reminders'])
+                print(event['overrides'])
+
+        """"
     except FileNotFoundError:
         print('File missing. Ensure you have credentials.json in the directory')
     except Exception:
@@ -148,6 +174,6 @@ def main():
         print('Try deleting the token.json file and re-running the program.')
         print(Exception) # TODO: what kinds of errors? provide meaningful message
 
-
+        """
 if __name__ == '__main__':
     main()
