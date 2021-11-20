@@ -1,4 +1,4 @@
-# calender-api
+# calendar-api
 ### Authors: Edourard Eltherington and Veronica Jack 
 
 
