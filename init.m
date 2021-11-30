@@ -1,3 +1,3 @@
-cd ..\BayesNetToolbox\bnt-master\
+cd ../bnt-master/
 addpath( genpathKPM( pwd ))
 test_BNT
