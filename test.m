@@ -16,23 +16,21 @@ intracons = {...
     'Travel', 'NeedPrepTime' ; ...          % T -> NPT
     'Alertness', 'NeedPrepTime' ; ...       % A -> NPT
     'StartTime', 'Alertness' };             % ST -> A
-%    'NightOwl', 'Alertness'};               % NO -> A % Removed node
+ %   'NightOwl', 'Alertness'};               % NO -> A % Removed node
 [intra, names] = mk_adj_mat( intracons, names, 1)
 DBN = names;
 
 % inter-stage dependencies (across time steps)
 intercons = { ...
-    'Forgetfulness', 'Forgetfulness' 
-   };
+    'Forgetfulness', 'Forgetfulness' };
 inter = mk_adj_mat( intercons, names, 0);
 
 
-intra
 % observation nodes for 1 time step (Priority, Travel, StartTime)
 onodes = [ 1 4 5 ];
 
 % discretize nodes
-NPT     = 2;    % three states NPT = {low, med, high}
+NPT     = 3;    % three states NPT = {low, med, high}
 P       = 2;    % two states P = {false, true}
 T       = 2;    % two states T = {false, true}
 F       = 3;    % three states F = {low, med, high}
@@ -44,10 +42,7 @@ dnodes = 1:ss;  % vector of discrete nodes
 
 % define equivalence classes !!! TODO: Understand this and possibly change
 ecl1 = [1 2 3 4 5 6]; % Updated after removing NightOwl
-ecl2 = [1 2 7 4 5 6]; %
-
-
-
+ecl2 = [7 8 9 10 5 12]; %
 %ecl2 = [8 2 3 9 10 6 11]; 
 %ecl2 = [8 9 10 11 12 13 14]
 
@@ -78,10 +73,8 @@ Forgetfulness1 = 9;
 % Prior Distribution: Pr( Forgetfulness0 )
 % Forgetfulness  F=low  F=med  F=high
 %                0.33     0.33     0.33
-cpt = [1/3 1/3 1/3];
+cpt = [1/3 1/3 1/3]
 bnet.CPD{Forgetfulness0} = tabular_CPD( bnet, Forgetfulness0, 'CPT', cpt );
-
-
 
 % Transition Function: Pr( Forgetfulness_t | Forgetfulness_t-1 )
 % F0    F1=low  F1=med  F1=high
@@ -89,8 +82,7 @@ bnet.CPD{Forgetfulness0} = tabular_CPD( bnet, Forgetfulness0, 'CPT', cpt );
 % med   0.05    0.90    0.05        
 % high  0.01    0.09    0.90        F = high, so you forget everything
 
-cpt = [.90 .05 .01 .09 .90 .09 0.01 0.05 0.90];
-
+cpt = [.90 .05 .01 .09 .90 .09 0.01 0.05 0.90]
 bnet.CPD{Forgetfulness1} = tabular_CPD( bnet, Forgetfulness1, 'CPT', cpt );
 
 % Observation Function #1: Pr( NeedPrepTime | Priority )
@@ -99,7 +91,7 @@ bnet.CPD{Forgetfulness1} = tabular_CPD( bnet, Forgetfulness1, 'CPT', cpt );
 % false   0.55     0.40     0.05
 % true    0.01     0.04     0.95
 
-cpt = [.5 .5];
+cpt = [.55 .01 .40 .04 .05 .95];
 
 bnet.CPD{Priority} = tabular_CPD(bnet, Priority, 'CPT', cpt ); 
 
@@ -109,7 +101,7 @@ bnet.CPD{Priority} = tabular_CPD(bnet, Priority, 'CPT', cpt );
 % false   0.70     0.25     0.05
 % true    0.01     0.80     0.19
 
-cpt = [.5 .5];
+cpt = [.70 .01 .25 .80 .05 .19];
 
 bnet.CPD{Travel} = tabular_CPD(bnet, Travel, 'CPT', cpt);
 
@@ -126,21 +118,15 @@ bnet.CPD{Alertness} = tabular_CPD(bnet, Alertness, 'CPT', cpt );
 
 %Observation Function #4: Pr( Alertness | StartTime ) and NightOwl
 
-cpt = [1/3 1/3 1/3];
+if isNightOwl
+    cpt = [.02 .20 .80 .08 .55 .15 .90 .25 .05]
+else
+    cpt = [.80 .25 .10 .15 .65 .20 .05 .10 .70]
+end
 
 bnet.CPD{StartTime} = tabular_CPD(bnet, StartTime, 'CPT', cpt);
 
 DBN = bnet;
-
-
-
-
-% NeedPrepTime 
-
-cpt =[ 0.4 0.3 0.2 0.1 0.3 0.2 0.1 0.7 0.9 0.5 0.3 0.7 0.2 0.1 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.3 0.5 0.4 0.2 0.3 0.1 0.2 ,0.4 0.5 0.3 0.5 0.7 0.4 0.6 0.7 0.8 0.9 0.7 0.8 0.9 0.3 0.1 0.5 0.7 0.3 0.8 0.9 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.7 0.5 0.6 0.8 0.7 0.9 0.8 0.6 0.5 0.7 0.5 0.3  0.6];
-cpt
-bnet.CPD{NeedPrepTime} = tabular_CPD(bnet, NeedPrepTime, 'CPT', cpt);
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Test and Check DBN
