@@ -34,33 +34,36 @@ This program was created with the following language and module versions:
 
 ## Setup
 0. Please use the following resources to ensure the languages and modules are installed.
-  - [Matlab engine for python](https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html)
-  - Google client library for Python
-  ```pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib```
-  - [BayesNetToolbox](https://github.com/bayesnet/bnt.git)
+    - [Matlab engine for python](https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html)
+    - [BayesNetToolbox](https://github.com/bayesnet/bnt.git)
+    - Google client library for Python:
+
+        ```
+        pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+        ```
 
 1. Check that all files are present and in the correct directories according to the graph below:
 
-```
-Your directory
-|   
-└─── bnt-master (contains BayesNetToolbox)
-|    
-└─── GCRS (project folder)
-     |  main.py
-     |  profile.py
-     |  updatereminders.py
+    ```
+    Your directory
+    |   
+    └─── bnt-master (contains BayesNetToolbox)
+    |    
+    └─── GCRS (project folder)
+        |  main.py
+        |  profile.py
+        |  updatereminders.py
 
-```
+    ```
 
 2. Make sure the code will be running in the file directory. If you are using Visual Studio Code, you can check this setting with these steps:
     1. Go to `File` > `Preferences` > `Settings`
     2. Search for "execute in file dir"
     3. Check the box for "When executing a file in terminal, whether to use execute the file's directory, instead of the current open folder"
 
-You are now ready to execute [main.py](main.py)
+You are now ready to execute main.py.
 
-`Please note that Matlab does not need to be running when main.py is executed. Python will run Matlab and initialize the BNT itself as long as the files are in the appropriate directories`
+*Please note that Matlab does not need to be running when main.py is executed. Python will run Matlab and initialize the BNT itself as long as the files are in the appropriate directories*
 
 ## Classes and Functions
 This project has 2 core parts:
@@ -84,8 +87,11 @@ This project has 2 core parts:
 - After the best action is determined, this class also implements the best action by updating the number of reminders on the upcoming events.
 
 ### Matlab
+To be completed
 
 #### init.m
+To be completed
 
 #### mk_model.m
+To be completed
 
