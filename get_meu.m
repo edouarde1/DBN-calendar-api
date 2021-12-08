@@ -14,20 +14,23 @@ action = 'None';
 % Compute the eu for each action 
 
 % Expected utility of doing nothing
-eu_none = 0
+eu_none = 0;
 
 % Expected utility of setting a reminder
-eu_reminder = prNeedPrepTime * util(2) + (1 - prNeedPrepTime) * util(1)
+eu_reminder = prNeedPrepTime * util(2) + (1 - prNeedPrepTime) * util(1);
 
 % Override default if setting a reminder is
 % better than doing nothing and EU is low
 if eu_reminder > eu_none
-    action = 'set 1 reminder'
+    action = 'set 1 reminder';
 
     % Set 3 reminders if EU of setting a reminder is VERY high
     if eu_reminder > 2   % TODO: CHANGE THIS NUMBER
-        action = 'set 3 reminders'
-    
+        action = 'set 3 reminders';
+    end
+
     % Set 2 reminders if EU of setting a reminder is medium
     if eu_reminder > 1.5 % TODO: CHANGE THIS NUMBER
-        action = 'set 2 reminders'
+        action = 'set 2 reminders';
+    end
+end
