@@ -19,7 +19,7 @@ intracons = {...
     'NightOwl', 'Alertness'};               % NO -> A
 [intra, names] = mk_adj_mat( intracons, names, 1);
 DBN = names;
-
+names
 % inter-stage dependencies (across time steps)
 intercons = { ...
     'Forgetfulness', 'Forgetfulness' 
@@ -31,7 +31,7 @@ inter = mk_adj_mat( intercons, names, 0);
 onodes = [ 1 2 5 6 ];
 
 % discretize nodes
-NPT     = 2;    % three states NPT = {low, med, high}
+NPT     = 2;    % two states NPT = {false,true}
 P       = 2;    % two states P = {false, true}
 T       = 2;    % two states T = {false, true}
 F       = 2;    % three states F = {false, true}
@@ -89,7 +89,7 @@ cpt = [.90 .02 .10 .98];
 %cpt = [0.90 0.05 0.01 ...
 %       0.09 0.90 0.09 ...
 %       0.01 0.05 0.90];
-bnet.CPD{Forgetfulness1} = tabular_CPD( bnet, Forgetfulness1, 'CPT', cpt );
+bnet.CPD{8} = tabular_CPD( bnet, Forgetfulness1, 'CPT', cpt );
 
 % Prior distribution: Pr(Priority)
 % Priorit  P=false P=true

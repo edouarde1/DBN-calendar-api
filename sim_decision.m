@@ -1,3 +1,4 @@
+
 function prNeedPrepTime = sim_decision(dbn, ex, isNightOwl, startTime, travel, priority)
 % function prNeedPrepTime = sim_decision(dbn, forgetful, isNightOwl)
 % ARGS: dbn = dynamic bayes net model specified by BNT syntax
@@ -8,8 +9,9 @@ function prNeedPrepTime = sim_decision(dbn, ex, isNightOwl, startTime, travel, p
 % Note: The user values forgetful and isNightOwl fix the evidence
 
 engine = bk_inf_engine(dbn); % set up inference engine
-T = 30;
+T = 70;
 
+% sim_decision(dbn, 2, 1, 1, 1, 1)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % generate a series of evidence in advance
 % To change the fixed variables, look for !! in comments below !!
@@ -25,7 +27,7 @@ elseif ex == 2 % For flag 2, create fixed observable evidence
         'Travel=%d, Priority=%d\n'], ...
         isNightOwl, startTime, travel, priority)
     evidence = cell(7,T); % 7 nodes, T time steps
-    for ii = 1:2 % Iterate through evidence and fix values to event info
+    for ii = 1:T % Iterate through evidence and fix values to event info
         evidence{1,ii} = isNightOwl;
         evidence{2,ii} = startTime;
         evidence{5,ii} = travel;
@@ -39,7 +41,7 @@ else % For flag 3, randomness is restricted by fixing the hidden variable
     evidence = sampleHelp_seq( dbn, NPT_fixed, F_fixed, T );
 end
 
-%disp(evidence) % print out evidence that gets generated (not pretty)
+disp(evidence) % print out evidence that gets generated (not pretty)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % inference process: infer if user needs help over T time steps
@@ -62,14 +64,15 @@ A = get_alertness(prAlertness, isNightOwl, startTime);
 
 % get the probability of need prep time at t=0
 prNeedPrepTime = get_field(dbn.CPD{dbn.names('NeedPrepTime')},'cpt');
-prNeedPrepTime = prNeedPrepTime(A, F, priority, travel, 2)
 
-belief = [belief, prNeedPrepTime];
+
+belief = [belief, prNeedPrepTime(2)];
 subplot(1, 2, 1);
+%plot(belief1, 'o-', LineWidth=1)
 plot(belief, 'o-', LineWidth=1)
 
 % log best decision
-[bestA, eu] = get_meu(prNeedPrepTime);
+[bestA, eu] = get_meu(prNeedPrepTime(2));
 exputil = [exputil, eu];
 fprintf('At t=%d: best action = %s, eu = %f\n', 0, bestA, eu);
 subplot( 1, 2, 2 );
@@ -80,32 +83,32 @@ plot( exputil, '*-', LineWidth=1);
 
 % get the probability of NeedPrepTime for this time step
 marg = dbn_marginal_from_bel(engine, 7);
-prNeedPrepTime = marg.T(2);
-prNeedPrepTime
+prNeedPrepTime = marg.T;
+prNeedPrepTime;
 
 % plot it
-belief = [belief, prNeedPrepTime];
+belief = [belief, prNeedPrepTime(2)];
 subplot( 1, 2, 1 );
 plot( belief, 'o-', LineWidth=1);
 
 % log best decision
-[bestA, eu] = get_meu(prNeedPrepTime);
+[bestA, eu] = get_meu(prNeedPrepTime(2));
 exputil = [exputil, eu];
 fprintf('At t=%d: best action = %s, eu = %f\n', 0, bestA, eu);
 subplot( 1, 2, 2 );
 plot( exputil, '*-' );
+ 
 
 % Repeat inference steps for each time step
 for t=2:T
   % update belief with evidence at current time step
   [engine, ll(t)] = dbn_update_bel(engine, evidence(:,t-1:t));
-  
   % extract marginals for 'needPrepTime' in current belief state
   marg = dbn_marginal_from_bel(engine, 7);
   prNeedPrepTime = marg.T;
 
   % log best decision
-  [bestA, eu] = get_meu( prNeedPrepTime );
+  [bestA, eu] = get_meu( prNeedPrepTime(2) );
   exputil = [exputil, eu]; 
   fprintf('At t=%d: best action = %s, eu = %f\n', t, bestA, eu);
   subplot( 1, 2, 2 );
@@ -115,7 +118,7 @@ for t=2:T
   axis( [ 0 T -5 5] );
 
   % keep track of results and plot it
-  belief = [belief, prNeedPrepTime ];
+  belief = [belief, prNeedPrepTime(2)];
   subplot( 1, 2, 1 );
   plot( belief, 'o-' );
   xlabel( 'Time Steps' );
