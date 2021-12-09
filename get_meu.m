@@ -23,14 +23,11 @@ eu_reminder = prNeedPrepTime * util(2) + (1 - prNeedPrepTime) * util(1);
 % better than doing nothing and EU is low
 if eu_reminder > eu_none
     action = 'set 1 reminder';
-
     % Set 3 reminders if EU of setting a reminder is VERY high
-    if eu_reminder > 2   % TODO: CHANGE THIS NUMBER
+    if eu_reminder > 1.5   % TODO: CHANGE THIS NUMBER
         action = 'set 3 reminders';
-    end
-
     % Set 2 reminders if EU of setting a reminder is medium
-    if eu_reminder > 1.5 % TODO: CHANGE THIS NUMBER
+    elseif eu_reminder > 1 % TODO: CHANGE THIS NUMBER
         action = 'set 2 reminders';
     end
 end

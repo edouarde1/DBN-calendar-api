@@ -10,13 +10,13 @@ val = 0;
 
 % Penalty: disruption
 % Reminders are supposed to be disruptful, but that in itself not great
-val = val - 0.5;
+val = val - 0.3;
 
 % if prepTime is NOT needed
 % then user doesn't need a reminder
 % so a reminder would be VERY disruptful and pointless
 if needPrepTime == 1
-    val = val - 2.5;
+    val = val - 2;
 % if prepTime IS needed
 % then user does need a reminder
 % so a reminder would be helpful

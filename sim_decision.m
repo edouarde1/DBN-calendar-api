@@ -41,7 +41,7 @@ else % For flag 3, randomness is restricted by fixing the hidden variable
     evidence = sampleHelp_seq( dbn, NPT_fixed, F_fixed, T );
 end
 
-disp(evidence) % print out evidence that gets generated (not pretty)
+%disp(evidence) % print out evidence that gets generated (not pretty)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % inference process: infer if user needs help over T time steps
@@ -127,5 +127,38 @@ for t=2:T
   pause(0.01);
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Helper Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function forgetful = get_forgetfulness(prForgetful)
+%forgetful = get_forgetfullness(prForgetful)
+%   Depending on the probability of forgetfulness
+%   provides a value of true or false
 
+% If the probability that forgetfulness is higher than 0.5, return true:2
+if prForgetful > 0.5
+    forgetful = 2;
 
+% If probability is 0.5, then take a random number
+elseif prForgetful == 0.5
+    forgetful = get_forgetfulness(rand(1));
+
+% If probability is less than 0.5, then return false: 1
+else
+    forgetful = 1;
+end
+
+function alertness = get_alertness(prAlertness, isNightOwl, startTime)
+%alertness =  get_alertness(prAlertness, isNightOwl, startTime)
+%   Determine the level of alertness depending on probability
+
+prLow = prAlertness(isNightOwl, startTime, 1);
+prMed = prAlertness(isNightOwl, startTime, 2);
+prHigh= prAlertness(isNightOwl, startTime, 3);
+if (prLow > prMed) && (prLow > prHigh)
+    alertness = 1;
+elseif (prMed > prLow) && (prMed > prHigh)
+    alertness = 2;
+else
+    alertness = 3;
+end
