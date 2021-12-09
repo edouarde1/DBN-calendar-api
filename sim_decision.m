@@ -50,34 +50,48 @@ belief = []; % will concatenate and plot this variable
 exputil = [];
 subplot(1, 2, 1); % setup plot for graph
 
-% at t=0, no evidence has been entered, so the probability is same as the
-% prior encoded in the DBN itself
+% At t=0, probability of forgetful is same as prior encoded in DBN
+prForgetful = get_field(dbn.CPD{dbn.names('Forgetfulness')},'cpt');
 
-prForgetful = get_field( dbn.CPD{ dbn.names('Forgetfulness') }, 'cpt' )
-belief = [belief, prForgetful(2)];
+% get a value for it depending on its probability
+F = get_forgetfulness(prForgetful(2));
+
+% get the prAlertness given nightOwl and starttime
+prAlertness = get_field(dbn.CPD{dbn.names('Alertness')},'cpt');
+A = get_alertness(prAlertness, isNightOwl, startTime);
+
+% get the probability of need prep time at t=0
+prNeedPrepTime = get_field(dbn.CPD{dbn.names('NeedPrepTime')},'cpt');
+prNeedPrepTime = prNeedPrepTime(A, F, priority, travel, 2)
+
+belief = [belief, prNeedPrepTime];
 subplot(1, 2, 1);
 plot(belief, 'o-', LineWidth=1)
 
 % log best decision
-[bestA, eu] = get_meu( prForgetful(2) );
+[bestA, eu] = get_meu(prNeedPrepTime);
 exputil = [exputil, eu];
-fprintf('t=%d: best action = %s, eu = %f\n', 0, bestA, eu);
+fprintf('At t=%d: best action = %s, eu = %f\n', 0, bestA, eu);
 subplot( 1, 2, 2 );
 plot( exputil, '*-', LineWidth=1);
 
-% at t=1: initialize the belief state 
+% At t=1, initialize the belief state 
 [engine, ll(1)] = dbn_update_bel1(engine, evidence(:,1));
 
-marg = dbn_marginal_from_bel(engine, 1);
-prForgetful = marg.T
-belief = [belief, prForgetful(2)];
+% get the probability of NeedPrepTime for this time step
+marg = dbn_marginal_from_bel(engine, 7);
+prNeedPrepTime = marg.T(2);
+prNeedPrepTime
+
+% plot it
+belief = [belief, prNeedPrepTime];
 subplot( 1, 2, 1 );
 plot( belief, 'o-', LineWidth=1);
 
 % log best decision
-[bestA, eu] = get_meu( prForgetful(2) );
+[bestA, eu] = get_meu(prNeedPrepTime);
 exputil = [exputil, eu];
-fprintf('t=%d: best action = %s, eu = %f\n', 0, bestA, eu);
+fprintf('At t=%d: best action = %s, eu = %f\n', 0, bestA, eu);
 subplot( 1, 2, 2 );
 plot( exputil, '*-' );
 
@@ -86,27 +100,26 @@ for t=2:T
   % update belief with evidence at current time step
   [engine, ll(t)] = dbn_update_bel(engine, evidence(:,t-1:t));
   
-  % extract marginals of the current belief state
-  i = 1;
-  marg = dbn_marginal_from_bel(engine, i);
-  prForgetful = marg.T;
+  % extract marginals for 'needPrepTime' in current belief state
+  marg = dbn_marginal_from_bel(engine, 7);
+  prNeedPrepTime = marg.T;
 
   % log best decision
-  [bestA, eu] = get_meu( prForgetful(2) );
+  [bestA, eu] = get_meu( prNeedPrepTime );
   exputil = [exputil, eu]; 
-  fprintf('t=%d: best action = %s, eu = %f\n', t, bestA, eu);
+  fprintf('At t=%d: best action = %s, eu = %f\n', t, bestA, eu);
   subplot( 1, 2, 2 );
   plot( exputil, '*-', LineWidth=1);
   xlabel( 'Time Steps' );
-  ylabel( 'EU(Help)' );
+  ylabel( 'EU(Reminder)' );
   axis( [ 0 T -5 5] );
 
   % keep track of results and plot it
-  belief = [belief, prForgetful(2)];
+  belief = [belief, prNeedPrepTime ];
   subplot( 1, 2, 1 );
   plot( belief, 'o-' );
   xlabel( 'Time Steps' );
-  ylabel( 'Pr(NeedHelp)' );
+  ylabel( 'Pr(NeedPrepTime)' );
   axis( [ 0 T 0 1] );
   pause(0.01);
 end
