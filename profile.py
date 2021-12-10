@@ -6,9 +6,10 @@ def read_profile():
     info = infile.read().split("\n")
     user = {"name" : info[0],
             "calendarName" : info[1],
-            "forgetful" : info[2],
-            "isNightOwl" : info[3]}
+            "forgetful" : int(info[2]),
+            "isNightOwl" : int(info[3])}
     infile.close()
+    print(f"Welcome back, {user['name']}!\n")
     return user
          
 # Write text to user_profile.txt   
@@ -48,8 +49,8 @@ def confirm_input(question):
             if ans == "med": return 2
             if ans == "high": return 3
         if "owl" in question:
-            if ans == "yes": return True
-            if ans == "no": return False
+            if ans == "yes": return 2
+            if ans == "no": return 1
     else:
         confirm_input(question)
 

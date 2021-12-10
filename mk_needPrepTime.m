@@ -19,7 +19,7 @@ intracons = {...
     'NightOwl', 'Alertness'};               % NO -> A
 [intra, names] = mk_adj_mat( intracons, names, 1);
 DBN = names;
-names
+
 % inter-stage dependencies (across time steps)
 intercons = { ...
     'Forgetfulness', 'Forgetfulness' 

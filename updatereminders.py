@@ -1,8 +1,9 @@
 # pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
-from __future__ import print_function
+import matlab.engine
 import datetime
 import os.path
+import runmatlab as rm
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -55,16 +56,15 @@ def __get_color(colorId):
 # Determines if the event starts in the morning, day, or night
 def __get_startTime_Type(startTime):
     time = int(startTime.split(":")[0])
-    if(time < 11): return "morning"
-    elif(time > 17): return "night"
-    else: return "day"           
+    if(time < 11) and (time > 5): return 1   # morning 5am - 11am
+    elif(time > 17) or (time < 5): return 3  # night 5pm - 5am
+    else: return 2                           # day 11am - 5pm
     
 # Parses the dateTime String to get the start date and start time separately
 def __format_date(raw_dateTime):
     dt = raw_dateTime.split('T')
     startDate = dt[0]
     startTime = dt[1].split('-')[0]
-
     return startDate, startTime;
 
 # Calculates the length of the event (end time - start time)
@@ -87,7 +87,6 @@ def __get_reminders(reminders):
     if("overrides" not in reminders): result = 'None'
     else:
         overrides = reminders['overrides']
-        
         reminderList = []
         for ov in overrides:
             if 'minutes' in ov: reminderList.append(str(ov['minutes']) + ' ' + 'minutes')
@@ -95,44 +94,51 @@ def __get_reminders(reminders):
             result += '\n\t\t- ' + r
     return result
 
-# Prints event details to terminal
+# Prints event details to terminal and adds formatted values to event object
 def __print_event(event):
     start_string = event['start'].get('dateTime')
     end_string = event['end'].get('dateTime')
     startDate, startTime = __format_date(start_string)
-    startTimeType = __get_startTime_Type(startTime)
+    my_startTimeType = __get_startTime_Type(startTime)
     length = __get_length(start_string, end_string)
     reminders = __get_reminders(event['reminders'])
     color = __get_color(event['colorId'])
-    priority = 'T' if color == 'tomato' else 'F' 
-    travel = 'T' if ("location" in event) and ('http' not in event['location']) else 'F'
+    my_priority = 2 if color == 'tomato' else 1 # Matlab formatting: 1-False, 2-True
+    my_travel = 2 if ("location" in event) and ('http' not in event['location']) else 1
     print(event['summary'])
     print('\t- Date:', startDate)
-    print('\t- Start:', startTime, startTimeType)
+    print('\t- Start:', startTime, my_startTimeType)
     print('\t- Length:', length)
     print('\t- Color:', color)
-    print('\t- Priority:', priority)
-    print('\t- Travel:', travel)
-    print('\t- Reminders:', __get_reminders(event['reminders']))
+    print('\t- Priority:', my_priority)
+    print('\t- Travel:', my_travel)
+    print('\t- Reminders:', reminders)
+    
+    event['my_startTimeType'] = my_startTimeType
+    event['my_travel'] = my_travel
+    event['my_priority'] = my_priority
+
+    return event
 
 # Retrieve and print upcoming events (max. 10)
 def __get_upcoming_events(service, calId):
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print('\nUPCOMING EVENTS')
+    print('\n=====UPCOMING EVENTS=====')
     events_result = service.events().list(calendarId=calId, timeMin=now,
-                                        maxResults=10, singleEvents=True,
+                                        maxResults=2, singleEvents=True, # TODO: CHANGE BACK TO 10
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
-
+    
     if not events:
         print('No upcoming events found.')
-    for event in events:
-        __print_event(event) # prints values for debugging
+    
+    for i in range(len(events)):
+        events[i] = __print_event(events[i]) # prints values for debugging
 
     return events
 
 # Update the number of reminders on the event
-def __update_numReminder (service, event, calId ,numReminder):
+def __update_numReminder(service, event, calId ,numReminder):
     if(numReminder in [0, 1, 2, 3]):
         reminders = event['reminders']
         
@@ -154,8 +160,7 @@ def __update_numReminder (service, event, calId ,numReminder):
         return False
 
 # Called from main.py to update the reminders for upcoming events in the calendar specified
-def update_reminders(calendarName):
-    
+def update_reminders(calendarName, isNightOwl):
         # Establish the connection using credentials
         service = __establish_connection()
        
@@ -174,23 +179,27 @@ def update_reminders(calendarName):
         # Get the upcoming events
         events = __get_upcoming_events(service, myCalendar["id"])
     
-        # TODO: Initialize Matlab
+        # Open Matlab, init BNT, make model
+        print('\nOpening Matlab and initializing the BNT...')
+        eng = rm.initialize()
         
-    
         # Go through upcoming events, pass to Matlab, get action, do action
-        for event in events:
-            print(f"Passing values to Matlab for {event['summary']}...")
-        
-            # TODO: Get best action from Matlab result
-            best_action = 2 # for testing purposes
-            print(f"The number of reminders recommended for {event['summary']} is {best_action}")
+        for event in events:         
+            print(f"\nPassing values to Matlab for {event['summary']}...")
             
-            # Update the number of reminders on the event
-            print("BEFORE UPDATE")
+            best_action = rm.run_dbn(eng, isNightOwl, event)
+            print(f"\nThe number of reminders recommended for {event['summary']} is to set {best_action} reminder(s).")
+            
+            print("\n===== BEFORE UPDATE =====")
             __print_event(event)
+            
             if(__update_numReminder(service, event, myCalendar["id"],  best_action )):
-                print("AFTER UPDATE")
+                print("\n===== AFTER UPDATE =====")
                 __print_event(event)
+            else:
+                print("\n===== NO REMINDER SET =====")
+        
+        rm.stop_matlab(eng)
 
         """"
     except FileNotFoundError:
