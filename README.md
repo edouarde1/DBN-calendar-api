@@ -1,15 +1,13 @@
 # Google Calendar Reminder System
-COSC 329 Final Project
-UBC Okanagan Campus
+COSC 329 Final Project due 12 December 2021
+
 Authors: Edouard Eltherington and Veronica Jack
-Due 12 December 2021 
 
 ## Table of Contents
 * [General Information](#general-information)
 * [Language and Modules](#language-and-modules)
 * [Setup](#setup)
 * [Classes and Functions](#classes-and-functions)
-* [Future Considerations](#future-considerations)
 
 ## General Information
 The purpose of this project is to use a calendar API to build a personalized reminder system. The system grabs upcoming events and decides whether any reminder notifications are appropriate depending on the user's profile. The model also considers information about the event, such as the start time, priority level, and location. The system's decsion-making process makes use of a Dynamic Bayes' Network model and utility function to decide how many, if any, reminders will be set.
@@ -41,22 +39,36 @@ This program was created with the following language and module versions:
         ```
         pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
         ```
+<br>
 
-1. Check that all files are present and in the correct directories according to the graph below:
+1. Go through the Google Calendar API prerequisites
+    - Create or have a Google Cloud Platform project with the Google Calendar API enabled. For help, refer to [Create a project and enable the API](https://developers.google.com/workspace/guides/create-project).
+    - Create and download authorization credentials for a desktop application. For help, refer to [Create credentials](https://developers.google.com/workspace/guides/create-credentials).
+<br><br>
+
+2. Check that all files are present and in the correct directories according to the graph below:
 
     ```
-    Your directory
+    Parent Directory
     |   
     └─── bnt-master (contains BayesNetToolbox)
     |    
-    └─── GCRS (project folder)
+    └─── DBN-calendar-api
+        |  credentials.json
+        |  get_meu.m
+        |  init.m
         |  main.py
+        |  mk_needPrepTime.m
         |  profile.py
+        |  README.md
+        |  run_dbn.m
+        |  runmatlab.py
+        |  sim_decision.m
         |  updatereminders.py
-
+        |  util.m
     ```
 
-2. Make sure the code will be running in the file directory. If you are using Visual Studio Code, you can check this setting with these steps:
+3. Make sure the code will be running in the file directory. If you are using Visual Studio Code, you can check this setting with these steps:
     1. Go to `File` > `Preferences` > `Settings`
     2. Search for "execute in file dir"
     3. Check the box for "When executing a file in terminal, whether to use execute the file's directory, instead of the current open folder"
@@ -71,7 +83,6 @@ This project has 2 core parts:
 2. The Matlab code that takes input from the python code, creates a Dynamic Bayes' Network model, determines the best action, and returns the best action to the python code.
 
 ### Python
-
 #### main.py
 - Main file that the user runs; uses the other python files to interact with the user, Google Calendar, and Matlab.
 
@@ -87,11 +98,22 @@ This project has 2 core parts:
 - After the best action is determined, this class also implements the best action by updating the number of reminders on the upcoming events.
 
 ### Matlab
-To be completed
 
 #### init.m
-To be completed
+- Used by updatereminders.py to open Matlab and initialize the Bayes' Net Toolbox.
 
-#### mk_model.m
-To be completed
+#### run_dbn.m
+- Used by updatereminders.py to run mk_needPrepTime.m and sim_decision.m
+
+#### mk_needPrepTime.m
+- Creates the DBN model based on our intuitions described in our report.
+
+#### sim_decision.m
+- Simulation environment that provides the best action after simulating the event with the DBN over 70 time steps.
+
+#### get_meu.m
+- Action-selection function which determines how many reminders to set based on the probability of needing preparation time.
+
+#### util.m
+- Function that determines the utility of setting a reminder depending on whether or not it was needed.
 
