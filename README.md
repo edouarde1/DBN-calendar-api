@@ -8,7 +8,7 @@ Authors: Edouard Eltherington and Veronica Jack
 * [Language and Modules](#language-and-modules)
 * [Setup](#setup)
 * [Classes and Functions](#classes-and-functions)
-* [Future Considerations](#future-considerations)
+* [Future Development](#future-development)
 
 ## General Information
 The purpose of this project is to use a calendar API to build a personalized reminder system. The system grabs upcoming events and decides whether any reminder notifications are appropriate depending on the user's profile. The model also considers information about the event, such as the start time, priority level, and location. The system's decsion-making process makes use of a Dynamic Bayes' Network model and utility function to decide how many, if any, reminders will be set.
@@ -122,7 +122,7 @@ This project has 2 core parts:
 #### util.m
 - Function that determines the utility of setting a reminder depending on whether or not it was needed.
 
-## Future Considerations
+## Future Development
 As mentioned in our report, as we developed our graphical model based on our intuitions, we developed an ideal model that we realized could not be completed before the project due date.
 
 
@@ -139,3 +139,4 @@ The following are our ideas for improving or further developing the program:
 Features that were not implemented:
 
 - a simulation setting for fixing hidden evidence. We determined that this was not necessary for the application to function.
+- use the input for the user's level of forgetfulness as evidence in the DBN. Currently, forgetfulness is a hidden and temporal variable with a transition function. Ideally, forgetfulness would be infuenced by an observable variable. See above in our list of ideas for improvements.
