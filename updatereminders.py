@@ -102,6 +102,8 @@ def __print_event(event):
     my_startTimeType = __get_startTime_Type(startTime)
     length = __get_length(start_string, end_string)
     reminders = __get_reminders(event['reminders'])
+    if 'colorId' not in event:
+        event['colorId'] = 2 # defalt color 'sage' 
     color = __get_color(event['colorId'])
     my_priority = 2 if color == 'tomato' else 1 # Matlab formatting: 1-False, 2-True
     my_travel = 2 if ("location" in event) and ('http' not in event['location']) else 1
@@ -125,7 +127,7 @@ def __get_upcoming_events(service, calId):
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     print('\n=====UPCOMING EVENTS=====')
     events_result = service.events().list(calendarId=calId, timeMin=now,
-                                        maxResults=2, singleEvents=True, # TODO: CHANGE BACK TO 10
+                                        maxResults=10, singleEvents=True, 
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
     
@@ -169,9 +171,12 @@ def update_reminders(calendarName, isNightOwl):
         calendarsList = response.get('items')
     
         # Retreive the calendar
+       # valid = False
         for c in calendarsList:
+            
             if(c["summary"] == calendarName):
                 myCalendar = c
+    
     
         # Confirm the calendar
         print(f"\nCalendar Retrieved: {myCalendar['summary']}")
@@ -201,12 +206,4 @@ def update_reminders(calendarName, isNightOwl):
         
         rm.stop_matlab(eng)
 
-        """"
-    except FileNotFoundError:
-        print('File missing. Ensure you have credentials.json in the directory')
-    except Exception:
-        print('Error')
-        print('Try deleting the token.json file and re-running the program.')
-        print(Exception) # TODO: what kinds of errors? provide meaningful message
-
-        """
+ 

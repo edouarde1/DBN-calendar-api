@@ -7,6 +7,6 @@ cd bnt-master
 % add the path to BNT to the Matlab session
 addpath( genpathKPM( pwd ))
 % Initialize the BNT
-test_BNT;
+%test_BNT;
 % Return to DBN-calendar-api directory
 cd(currentFolder)
