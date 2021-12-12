@@ -1,6 +1,6 @@
 ---
 title: "Google Calender Reminder System"
-author: "Edouard Eltherington and Veronica Jack"
+author: "Edouard Eltherington 66389321 and Veronica Jack 12304986"
 date: "12/12/2021"
 output:
   pdf_document: default
@@ -11,10 +11,14 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+GitHub Repo: https://github.com/edouarde1/DBN-calendar-api
+
+
 \section{Introduction}
 
 The purpose of this project is to use a calendar API to build a personalized reminder system. We chose to use the Calendar API from Google to integrate our program with Google Calendar. The program grabs upcoming events and decides whether any reminder notifications are appropriate for each upcoming event depending on the user's profile (level of forgetfulness and if they are a night owl or early riser). The model also considers information about the event, such as the start time, priority level, and location. The system's decision-making process makes use of a Dynamic Bayes' Network model and utility function to decide how many, if any, reminders will be set in the user’s Google Calendar App.
 
+Please watch our [Video Demo]() and feel free to download the program from our [GitHub Repository](https://github.com/edouarde1/DBN-calendar-api).
 
 \section{Assumptions}
  \begin{enumerate}
@@ -97,7 +101,6 @@ As mentioned previously, we have many ideas that we would include if we had more
 
 
 \includegraphics[width=1\textwidth]{dbn-ideal.jpg}
-
 
 
 
@@ -191,29 +194,58 @@ After Phineas adds his lunch event to his Google Calendar, he runs our reminder 
 
 
 
-
-
-
-
-
-
-
 In this plot Pr(NeedPrepTime) is initially at ~41% which is moderate.  Similar to the above plots the Pr(NeedPrepTime) will increase as the level of forgetfulness increases over each time step. The EU reaches to about 0.8 which results in there being at least one reminder for this event. 
 
 The scenario is also nice for Phineas since he will have a reminder 10 minutes before Ferb arrives at the restaurant, which will get him ready and out the door on time!
 
+\subsection{How to Test}
+If you have downloaded our program and completed the prerequisites defined in the README, you can run simulations in two different ways.
+
+The first option is to run the program as intended. When the program runs for the first time, it asks for the user's information and stores their profile as a text file. If the user_profile.txt file is deleted, the program will run as if it was the first time and ask for user information.
+
+The second option for running simulations is to run the Matlab code by itself. After opening a Matlab session, the user can run the following code:
+
+\begin{itemize}
+\item `init.m`
+\item `dbn = mk_needPrepTime`
+\item `ex = 1` % 1: random, 2: fixed observable
+\item `isNightOwl = 1` % 1:false, 2:true
+\item `startTime = 1` % 1:morning, 2:day, 3:night
+\item `travel = 1` % 1:false, 2:true
+\item `priority = 1` % 1:false, 2:true
+\item `sim_decision(dbn, ex, isNightOwl, startTime, travel, priority)`
+\end{itemize}
 
 
-\section{Further Considerations}
+\section{Future Development}
 
-This  DBN captures a variety of situations that would cause an event to have a certain number of reminders based upon sleeping habits of the user, travel time, startime, and priority of an event. Given these inputs, the model predicts a number of reminders that would be most suited for each event. Having a basic model provides a simple way of changing event reminders over time steps. However, areas could use some further exploration. 
+This  DBN captures a variety of situations that would cause an event to have a certain number of reminders based upon sleeping habits of the user, travel time, startime, and priority of an event. Given these inputs, the model predicts a number of reminders that would be most suited for each event. Having a basic model provides a simple way of changing event reminders over time steps. However, areas could use further development. 
 
-More temporal relationships would more accurately reflect probabilities of event preparation times. In this model, forgetfulness is the only transition function. As seen with the graphs, this causes the initial probability of needPrepTime to remain steady over each time step. Once the model predicts the number of reminders in the first few time steps, the best action does not change. Adding in more variables with a temporal relationship could improve the way it sets reminders over many timesteps. 
+More temporal relationships would more accurately reflect probabilities of event preparation times. In this model, forgetfulness is the only transition function. As seen with the graphs, this causes the initial probability of needPrepTime to remain steady over each time step. Once the model predicts the number of reminders in the first few time steps, the best action does not change. Adding in more variables with a temporal relationship could improve the way it sets reminders over many timesteps.
+
 In the process of making the model one variable that was discussed was time until an event starts. The variable in real life has a strong effect on how many reminders a user would need  for an event. Imagine creating an event a couple months down the line, this would require more reminding! Although, keeping track of when a user creates an event and the inutions behind this variable were out of the scope for this project. 
 
-Lastly, this model relies on users being consistent with their reminders. Users might not always mark their events as a priority or might forget to include travel destination time. One idea would be to include some advanced text analysis technique that could read event name’s and automatically class events to priority or needing travel time. This would reduce the reliance on the user and create better predictions for event reminders. 
+As mentioned for our ideal graphical model, we would like to convert the binary travel variable into a more complex variable that would use Google Maps to estimate required travel time. In addition, we would prefer to havee more observable variables. These variables would influence Forgetfulness and NightOwl depeding on the user's attendance (if they attend every event and if they are late to events). NightOwl could be influenced by how many events tend to be at different times of day.
 
+Lastly, this model relies on users being consistent with their reminders. Users might not always mark their events as a priority or might forget to include the event location. One idea would be to include some text analysis on the event name to automatically class the priority level and intuitively determine if travel time is required if a previous event of the same name had a location set. This would reduce the reliance on the user and create better predictions for event reminders.
 
+\section{Incomplete Features}
 
+Two features were not completed for this project, as they were deemed unnecessary for the main goal of this project.
 
+The first incomplete feature is the third setting for the simulation environment which allows the user to test the DBN by fixing hidden variables. This was not implemented because the results from the first two simulations settings indicated that the program could successfully complete the project goal.
+
+The second incomplete feature is using the input from the user for their level of forgetfulness. Instead of using this input as evidence in the DBN, we changed forgetfulness to be a hidden variable that gets slightly worse over time. As mentioned in our future development section, forgetfulness would ideally be influenced by other observable variables based on user attendance.
+
+\section{Conclusion}
+
+Using the Bayes' Net Toolbox and Google Calendar API, we developed a personalized Google Calendar reminder system. This system pulls upcoming events and determines the best number of reminders to set in the user's Google Calendar using 7 variables (3 hidden) The event variables involved in this process include the event start time, priority level, and if the user must travel to the event. The user variables are their level of forgetfulness, if the user needs prepration time, and the user's level of alertness based on their sleeping habits. The system's decision-making process makes use of a utility function to decide to either set 0, 1, 2, or 3 reminders at set intervals before the event begins.
+
+For the DBN model, we handcrafted our CPTs based on our intuitions, and then we created two simulation environments to test the model over time. We use a built-in inference algorithm to update our belief distribution and plot the probability of needing preparation time and the expected utility of setting a reminder over time. The best action is then retrieved from these simulations and is incorporated into the calendar API.
+
+This program provides a solid base for future developments that could use more information about the user from their calendar (and potentially their location, depending on user preferences) to implement more observable variables to better estimate if the user needs preparation time before an event.
+
+\section{Acknowledgements}
+
+We want to thank Dr. Bowen Hui for helping us convert our intuitions into an accurate graphical model. We also thank Logan Parker, and Rylan Cox for their assistance in debugging our Matlab code that implemented the Bayes' Net Toolbox.
 
