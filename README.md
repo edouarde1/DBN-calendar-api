@@ -8,6 +8,7 @@ Authors: Edouard Eltherington and Veronica Jack
 * [Language and Modules](#language-and-modules)
 * [Setup](#setup)
 * [Classes and Functions](#classes-and-functions)
+* [Future Considerations](#future-considerations)
 
 ## General Information
 The purpose of this project is to use a calendar API to build a personalized reminder system. The system grabs upcoming events and decides whether any reminder notifications are appropriate depending on the user's profile. The model also considers information about the event, such as the start time, priority level, and location. The system's decsion-making process makes use of a Dynamic Bayes' Network model and utility function to decide how many, if any, reminders will be set.
@@ -41,9 +42,9 @@ This program was created with the following language and module versions:
         ```
 <br>
 
-1. Go through the Google Calendar API prerequisites
+1. Complete the Google Calendar API prerequisites
     - Create or have a Google Cloud Platform project with the Google Calendar API enabled. For help, refer to [Create a project and enable the API](https://developers.google.com/workspace/guides/create-project).
-    - Create and download authorization credentials for a desktop application. For help, refer to [Create credentials](https://developers.google.com/workspace/guides/create-credentials).
+    - Create and download authorization credentials for a desktop application, and change the name of the credentials file to `credentials.json`. For help, refer to [Create credentials](https://developers.google.com/workspace/guides/create-credentials). 
 <br><br>
 
 2. Check that all files are present and in the correct directories according to the graph below:
@@ -110,6 +111,10 @@ This project has 2 core parts:
 
 #### sim_decision.m
 - Simulation environment that provides the best action after simulating the event with the DBN over 70 time steps.
+- Simulation settings available:
+    - 1: Create random evidence
+    - 2: Create fixed observable evidence (used in Project to determine the appropriate number of reminders)
+    - 3: Create fixed hidden evidence (*Note: Feature unavailable*)
 
 #### get_meu.m
 - Action-selection function which determines how many reminders to set based on the probability of needing preparation time.
@@ -117,3 +122,20 @@ This project has 2 core parts:
 #### util.m
 - Function that determines the utility of setting a reminder depending on whether or not it was needed.
 
+## Future Considerations
+As mentioned in our report, as we developed our graphical model based on our intuitions, we developed an ideal model that we realized could not be completed before the project due date.
+
+
+The following are our ideas for improving or further developing the program:
+
+- Convert the binary travel variable into a more complex one where the program can take the specified location of the event, and then look up the realistic travel time in Google Maps to determine how much travel would be required.
+- Add a layer to the priority variable that looks at both the colour and name of the event. For example, if the name included "exam" or "interview" compared to "appointment" the priority level would be different.
+- Determine a way to gather evidence for the user's level of forgetfulness. This could be done with the user's location and if the user arrived to events on time or at all. This would create an attendance percentage.
+- Create a variable for time until the event starts from when the event was created. 
+- Change NightOwl to be a variable that could change over time and have a transition function that also depends on the user's attendance and number of events at different times of day in the last couple of months.
+
+<br>
+
+Features that were not implemented:
+
+- a simulation setting for fixing hidden evidence. We determined that this was not necessary for the application to function.
