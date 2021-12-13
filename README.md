@@ -5,7 +5,7 @@ Authors: Edouard Eltherington and Veronica Jack
 
 ## Table of Contents
 * [General Information](#general-information)
-* [Project Steps](#project-steps)
+* [Project Steps](#project-steps-and-timeline)
 * [Language and Modules](#language-and-modules)
 * [Setup](#setup)
 * [Classes and Functions](#classes-and-functions)
@@ -14,7 +14,7 @@ Authors: Edouard Eltherington and Veronica Jack
 ## General Information
 The purpose of this project is to use a calendar API to build a personalized reminder system. The system grabs upcoming events and decides whether any reminder notifications are appropriate depending on the user's profile. The model also considers information about the event, such as the start time, priority level, and location. The system's decsion-making process makes use of a Dynamic Bayes' Network model and utility function to decide how many, if any, reminders will be set.
 
-Please view our [demonstration]() and [report]() to learn more about how our reminder system reacts to different types of users and events.
+Please view our [demonstration](https://www.youtube.com/watch?v=BBLL8QbYvW4) and [report](https://drive.google.com/file/d/1uOhcfRPXs-H0C_rmvSXNfa_q_bojy_E_/view?usp=sharing) to learn more about how our reminder system reacts to different types of users and events.
 
 ## Project Steps and Timeline
 The project can be broken up into four main steps:
