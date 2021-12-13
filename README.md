@@ -5,6 +5,7 @@ Authors: Edouard Eltherington and Veronica Jack
 
 ## Table of Contents
 * [General Information](#general-information)
+* [Project Steps](#project-steps)
 * [Language and Modules](#language-and-modules)
 * [Setup](#setup)
 * [Classes and Functions](#classes-and-functions)
@@ -14,6 +15,35 @@ Authors: Edouard Eltherington and Veronica Jack
 The purpose of this project is to use a calendar API to build a personalized reminder system. The system grabs upcoming events and decides whether any reminder notifications are appropriate depending on the user's profile. The model also considers information about the event, such as the start time, priority level, and location. The system's decsion-making process makes use of a Dynamic Bayes' Network model and utility function to decide how many, if any, reminders will be set.
 
 Please view our [demonstration]() and [report]() to learn more about how our reminder system reacts to different types of users and events.
+
+## Project Steps and Timeline
+The project can be broken up into four main steps:
+
+1. Pull upcoming events from the user's Google Calendar.
+
+2. Build a DBN with the event and user information.
+
+3. Determine the best number of reminders using a utility function (and test with simulations).
+
+4. Set the number of reminders for the event in the user's Google Calendar.
+
+We completed these four steps over this timeline:
+
+* Chose the Project Option: Calendar API Reminder System (Oct. 29)
+
+* Decided to use Google Calendar API and Python (Oct. 31)
+
+* Learned how to use the API to pull upcoming events from our Google Calendar and update the number of reminders on an event (Nov. 14)
+
+* Created and adjusted a graphical model based on our intuitions (Nov. 4 - Dec. 10)
+
+* Built and debugged the DBN based on our graphical model (Nov. 19 - Dec. 9)
+
+* Developed the utility function to determine the best number of reminders (Nov. 26 - Dec. 9)
+
+* Tested the program using simulations and integrated Matlab with Python (Dec. 9 - Dec. 10)
+
+8. Complete documentation and video for submission (Dec. 12)
 
 ## Language and Modules
 This program was created with the following language and module versions:
@@ -45,7 +75,8 @@ This program was created with the following language and module versions:
 1. Complete the Google Calendar API prerequisites
     - Create or have a Google Cloud Platform project with the Google Calendar API enabled. For help, refer to [Create a project and enable the API](https://developers.google.com/workspace/guides/create-project).
     - Create and download authorization credentials for a desktop application, and change the name of the credentials file to `credentials.json`. For help, refer to [Create credentials](https://developers.google.com/workspace/guides/create-credentials). 
-<br><br>
+
+<br>
 
 2. Check that all files are present and in the correct directories according to the graph below:
 
@@ -69,12 +100,20 @@ This program was created with the following language and module versions:
         |  util.m
     ```
 
+<br>
+
 3. Make sure the code will be running in the file directory. If you are using Visual Studio Code, you can check this setting with these steps:
     1. Go to `File` > `Preferences` > `Settings`
     2. Search for "execute in file dir"
     3. Check the box for "When executing a file in terminal, whether to use execute the file's directory, instead of the current open folder"
 
+<br>
+
+4. Create events in your Google Calendar (take note of the name of this calendar) and ensure each event has a name, colour ('Tomato' for high-priority), start time, and location (leave blank if no travel is required).
+
 You are now ready to execute main.py.
+
+If you are running it for the second time but would like to change the user profile, simply delete user_profile.txt and run the program again to enter new information.
 
 *Please note that Matlab does not need to be running when main.py is executed. Python will run Matlab and initialize the BNT itself as long as the files are in the appropriate directories*
 
