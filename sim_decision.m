@@ -34,16 +34,8 @@ elseif ex == 2 % For flag 2, create fixed observable evidence
         evidence{5,ii} = travel;
         evidence{6,ii} = priority;
     end
-%%%%% Feature not implemented %%%%%
-%else % For flag 3, randomness is restricted by fixing the hidden variable
-%    NPT_fixed = 1;
-%    F_fixed = 1;
-%    disp(['Creating restricted evidence where NeedPrepTime=%d and ' ...
-%        'Forgetfulness=%d'], NPT_fixed, F_fixed)
-%    evidence = sampleHelp_seq( dbn, NPT_fixed, F_fixed, T );
-end
 
-%disp(evidence) % print out evidence that gets generated for debugging
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % inference process: infer if user needs help over T time steps
@@ -54,19 +46,8 @@ belief = []; % will concatenate and plot this variable
 exputil = [];
 subplot(1, 2, 1); % setup plot for graph
 
-% At t=0, probability of forgetful is same as prior encoded in DBN
-%prForgetful = get_field(dbn.CPD{dbn.names('Forgetfulness')},'cpt');
-
-% get a value for it depending on its probability
-%F = get_forgetfulness(prForgetful(2));
-
-% get the prAlertness given nightOwl and starttime
-%prAlertness = get_field(dbn.CPD{dbn.names('Alertness')},'cpt');
-%A = get_alertness(prAlertness, isNightOwl, startTime);
-
 % get the probability of need prep time at t=0
 prNeedPrepTime = get_field(dbn.CPD{dbn.names('NeedPrepTime')},'cpt');
-%prNeedPrepTime = prNeedPrepTime(A, F, priority, travel, 2);
 
 % Start plotting prNeedPrepTime
 belief = [belief, prNeedPrepTime(2)];
@@ -87,7 +68,6 @@ plot( exputil, '*-', LineWidth=1);
 % get the probability of NeedPrepTime for this time step
 marg = dbn_marginal_from_bel(engine, 7);
 prNeedPrepTime = marg.T;
-
 % plot prNeedPrepTime
 belief = [belief, prNeedPrepTime(2)];
 subplot( 1, 2, 1 );
@@ -109,7 +89,6 @@ for t=2:T
   % extract marginals for 'needPrepTime' in current belief state
   marg = dbn_marginal_from_bel(engine, 7);
   prNeedPrepTime = marg.T;
-
   % log best decision
   [bestA, eu] = get_meu( prNeedPrepTime(2) );
   exputil = [exputil, eu]; 
@@ -134,38 +113,4 @@ end
 % Return the best Action from the last simulated time step
 bestAction = bestA; 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Helper Functions
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function forgetful = get_forgetfulness(prForgetful)
-% forgetful = get_forgetfullness(prForgetful)
-%   ! ONLY use for t=0 !
-%   Determines level of forgetfulness depending on the probability of
-%   forgetfulness.
-if prForgetful > 0.5
-    forgetful = 2;
-
-% If probability is 0.5, then take a random number
-elseif prForgetful == 0.5
-    forgetful = get_forgetfulness(rand(1));
-
-% If probability is less than 0.5, then return false: 1
-else
-    forgetful = 1;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function alertness = get_alertness(prAlertness, isNightOwl, startTime)
-% alertness =  get_alertness(prAlertness, isNightOwl, startTime)
-%   ! ONLY use for t=0 !
-%   Determines the level of alertness depending on the probability
-prLow = prAlertness(isNightOwl, startTime, 1);
-prMed = prAlertness(isNightOwl, startTime, 2);
-prHigh= prAlertness(isNightOwl, startTime, 3);
-if (prLow > prMed) && (prLow > prHigh)
-    alertness = 1;
-elseif (prMed > prLow) && (prMed > prHigh)
-    alertness = 2;
-else
-    alertness = 3;
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
